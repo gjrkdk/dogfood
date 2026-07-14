@@ -28,3 +28,27 @@ func Slugify(s string) string {
 
 	return strings.TrimSuffix(b.String(), "-")
 }
+
+// SlugifyN is Slugify, maar het resultaat wordt afgekapt op maximaal maxLen
+// tekens. Er wordt niet midden in een woord gekapt: als de limiet in een
+// woord valt, wordt teruggekapt tot het laatste koppelteken ervoor. Het
+// resultaat eindigt nooit op een koppelteken. maxLen <= 0 geeft "".
+func SlugifyN(s string, maxLen int) string {
+	if maxLen <= 0 {
+		return ""
+	}
+
+	slug := Slugify(s)
+	if len(slug) <= maxLen {
+		return slug
+	}
+
+	cut := slug[:maxLen]
+	if slug[maxLen] != '-' {
+		if i := strings.LastIndexByte(cut, '-'); i >= 0 {
+			cut = cut[:i]
+		}
+	}
+
+	return strings.TrimSuffix(cut, "-")
+}
