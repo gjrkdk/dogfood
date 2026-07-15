@@ -34,17 +34,24 @@ func Slugify(s string) string {
 // woord valt, wordt teruggekapt tot het laatste koppelteken ervoor. Het
 // resultaat eindigt nooit op een koppelteken. maxLen <= 0 geeft "".
 func SlugifyN(s string, maxLen int) string {
-	if maxLen <= 0 {
+	return Truncate(Slugify(s), maxLen)
+}
+
+// Truncate kapt een slug s af op maximaal max tekens zonder een woord
+// doormidden te snijden: als de limiet in een woord valt, wordt teruggekapt
+// tot het laatste koppelteken ervoor, en een eventueel achterblijvend
+// koppelteken aan het eind wordt verwijderd. Is s korter dan of gelijk aan
+// max, dan wordt s ongewijzigd teruggegeven. max <= 0 of een lege s geeft "".
+func Truncate(s string, max int) string {
+	if max <= 0 || s == "" {
 		return ""
 	}
-
-	slug := Slugify(s)
-	if len(slug) <= maxLen {
-		return slug
+	if len(s) <= max {
+		return s
 	}
 
-	cut := slug[:maxLen]
-	if slug[maxLen] != '-' {
+	cut := s[:max]
+	if s[max] != '-' {
 		if i := strings.LastIndexByte(cut, '-'); i >= 0 {
 			cut = cut[:i]
 		}
