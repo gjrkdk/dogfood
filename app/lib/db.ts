@@ -38,3 +38,10 @@ export async function listNotes(): Promise<Note[]> {
   );
   return rows;
 }
+
+export async function deleteNote(id: number): Promise<boolean> {
+  const { rowCount } = await db().query("DELETE FROM notes WHERE id = $1", [
+    id,
+  ]);
+  return rowCount !== null && rowCount > 0;
+}
