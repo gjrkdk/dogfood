@@ -60,3 +60,33 @@ func TestSlugifyN(t *testing.T) {
 		})
 	}
 }
+
+// TestIsSlug is de specificatie van IsSlug: alleen kleine letters, cijfers
+// en enkele koppeltekens zijn toegestaan, een slug mag niet beginnen of
+// eindigen op een koppelteken en bevat geen dubbele koppeltekens.
+func TestIsSlug(t *testing.T) {
+	cases := []struct {
+		name string
+		in   string
+		want bool
+	}{
+		{"geldige slug", "hello-world", true},
+		{"enkel woord", "hello", true},
+		{"cijfers toegestaan", "go-1-24", true},
+		{"lege invoer is ongeldig", "", false},
+		{"hoofdletters zijn ongeldig", "Hello-world", false},
+		{"spatie is ongeldig", "hello world", false},
+		{"begint met koppelteken", "-hello", false},
+		{"eindigt op koppelteken", "hello-", false},
+		{"dubbel koppelteken", "hello--world", false},
+		{"alleen een koppelteken", "-", false},
+		{"underscore is ongeldig", "hello_world", false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := IsSlug(c.in); got != c.want {
+				t.Errorf("IsSlug(%q) = %v, want %v", c.in, got, c.want)
+			}
+		})
+	}
+}

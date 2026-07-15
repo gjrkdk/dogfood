@@ -52,3 +52,29 @@ func SlugifyN(s string, maxLen int) string {
 
 	return strings.TrimSuffix(cut, "-")
 }
+
+// IsSlug controleert of s een geldige slug is: alleen kleine letters, cijfers
+// en enkele koppeltekens, niet beginnend of eindigend op een koppelteken, en
+// zonder dubbele koppeltekens. Een lege string is geen geldige slug.
+func IsSlug(s string) bool {
+	if s == "" || s[0] == '-' || s[len(s)-1] == '-' {
+		return false
+	}
+
+	prevHyphen := false
+	for _, r := range s {
+		switch {
+		case r >= 'a' && r <= 'z' || r >= '0' && r <= '9':
+			prevHyphen = false
+		case r == '-':
+			if prevHyphen {
+				return false
+			}
+			prevHyphen = true
+		default:
+			return false
+		}
+	}
+
+	return true
+}
