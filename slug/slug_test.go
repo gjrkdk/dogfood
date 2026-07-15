@@ -61,33 +61,31 @@ func TestSlugifyN(t *testing.T) {
 	}
 }
 
-// TestTruncate is de specificatie van Truncate: een slug afgekapt op
-// maximaal max tekens zonder midden in een woord te breken (er wordt
-// teruggekapt op het laatste koppelteken vóór de limiet, en een
-// achterblijvend koppelteken aan het eind wordt verwijderd). Is s korter
-// dan of gelijk aan max, dan komt s ongewijzigd terug. max <= 0 of een lege
-// s geeft "".
-func TestTruncate(t *testing.T) {
+// TestIsSlug is de specificatie van IsSlug: alleen kleine letters, cijfers
+// en enkele koppeltekens zijn toegestaan, een slug mag niet beginnen of
+// eindigen op een koppelteken en bevat geen dubbele koppeltekens.
+func TestIsSlug(t *testing.T) {
 	cases := []struct {
 		name string
 		in   string
-		max  int
-		want string
+		want bool
 	}{
-		{"past ruim binnen de limiet", "hello", 10, "hello"},
-		{"past precies binnen de limiet", "hello-world", 11, "hello-world"},
-		{"limiet valt precies op een koppelteken", "hello-world-foo", 11, "hello-world"},
-		{"limiet valt midden in een woord, kapt terug tot koppelteken", "hello-world-foo", 8, "hello"},
-		{"limiet net na een koppelteken kapt terug", "hello-world", 6, "hello"},
-		{"geen koppelteken vóór de limiet, hakt hard af", "helloworld", 5, "hello"},
-		{"max nul geeft lege string", "hello-world", 0, ""},
-		{"max negatief geeft lege string", "hello-world", -5, ""},
-		{"lege invoer geeft lege string", "", 5, ""},
+		{"geldige slug", "hello-world", true},
+		{"enkel woord", "hello", true},
+		{"cijfers toegestaan", "go-1-24", true},
+		{"lege invoer is ongeldig", "", false},
+		{"hoofdletters zijn ongeldig", "Hello-world", false},
+		{"spatie is ongeldig", "hello world", false},
+		{"begint met koppelteken", "-hello", false},
+		{"eindigt op koppelteken", "hello-", false},
+		{"dubbel koppelteken", "hello--world", false},
+		{"alleen een koppelteken", "-", false},
+		{"underscore is ongeldig", "hello_world", false},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			if got := Truncate(c.in, c.max); got != c.want {
-				t.Errorf("Truncate(%q, %d) = %q, want %q", c.in, c.max, got, c.want)
+			if got := IsSlug(c.in); got != c.want {
+				t.Errorf("IsSlug(%q) = %v, want %v", c.in, got, c.want)
 			}
 		})
 	}
