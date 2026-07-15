@@ -1,0 +1,22 @@
+{
+  "name": "dogfood-app",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "16.2.10",
+    "pg": "^8.13.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.0.2",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.5"
+  }
+}
