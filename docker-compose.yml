@@ -1,0 +1,22 @@
+# Postgres voor de demo-app. `docker compose up -d --wait` blokkeert tot de
+# healthcheck groen is — dat is het readiness-antwoord: de agent hoeft niet
+# zelf te pollen en verify start nooit tegen een halfwakkere database.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    # Bewust niet 5432 op de host: die is op een ontwikkelmachine vaak al
+    # bezet door een andere Postgres. De container luistert intern gewoon op
+    # 5432; alleen de host-kant wijkt af.
+    ports:
+      - "55432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d demo"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
