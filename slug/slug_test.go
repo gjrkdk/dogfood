@@ -31,6 +31,49 @@ func TestSlugify(t *testing.T) {
 	}
 }
 
+// TestMustMake is de specificatie van MustMake: het resultaat van Slugify,
+// met een panic als dat resultaat leeg is.
+func TestMustMake(t *testing.T) {
+	cases := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"kleine letters blijven", "hello", "hello"},
+		{"hoofdletters worden klein", "Hello World", "hello-world"},
+		{"leestekens collapsen mee", "Go 1.24 is uit!", "go-1-24-is-uit"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := MustMake(c.in); got != c.want {
+				t.Errorf("MustMake(%q) = %q, want %q", c.in, got, c.want)
+			}
+		})
+	}
+}
+
+// TestMustMakePanicsOnEmptyResult controleert dat MustMake in paniek raakt
+// wanneer Slugify een lege slug oplevert.
+func TestMustMakePanicsOnEmptyResult(t *testing.T) {
+	cases := []struct {
+		name string
+		in   string
+	}{
+		{"lege invoer", ""},
+		{"alleen troep", "!!!"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			defer func() {
+				if recover() == nil {
+					t.Errorf("MustMake(%q) had in paniek moeten raken", c.in)
+				}
+			}()
+			MustMake(c.in)
+		})
+	}
+}
+
 // TestSlugifyN is de specificatie van SlugifyN: het resultaat van Slugify,
 // afgekapt op maximaal maxLen tekens zonder midden in een woord te breken
 // (er wordt teruggekapt op het laatste koppelteken vóór de limiet), zonder

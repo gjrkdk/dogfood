@@ -29,6 +29,19 @@ func Slugify(s string) string {
 	return strings.TrimSuffix(b.String(), "-")
 }
 
+// MustMake is Slugify, maar raakt in paniek als het resultaat leeg is. Een
+// lege slug duidt op een programmeerfout bij een niet-lege, niet-triviale
+// invoer (bijvoorbeeld een vaste tekst in de code), dus gebruik MustMake
+// alleen wanneer een lege slug nooit legitiem kan zijn.
+func MustMake(s string) string {
+	slug := Slugify(s)
+	if slug == "" {
+		panic("slug: MustMake(" + s + ") geeft een lege slug")
+	}
+
+	return slug
+}
+
 // SlugifyN is Slugify, maar het resultaat wordt afgekapt op maximaal maxLen
 // tekens. Er wordt niet midden in een woord gekapt: als de limiet in een
 // woord valt, wordt teruggekapt tot het laatste koppelteken ervoor. Het
