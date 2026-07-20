@@ -1,6 +1,6 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 
-import { addNote, db, deleteNote, listNotes } from "./db";
+import { addNote, db, deleteNote, listNotes, updateNote } from "./db";
 
 // Deze test praat met een échte Postgres — geen mock. Dat is het punt: hij
 // faalt als de database niet draait, en bewijst daarmee dat de omgeving
@@ -45,5 +45,19 @@ describe("notes", () => {
 
   it("geeft false voor een onbekend id", async () => {
     expect(await deleteNote(12345)).toBe(false);
+  });
+
+  it("wijzigt de tekst van een bestaande notitie", async () => {
+    const created = await addNote("origineel");
+
+    const updated = await updateNote(created.id, "aangepast");
+    expect(updated).toEqual({ id: created.id, body: "aangepast" });
+
+    const notes = await listNotes();
+    expect(notes.map((n) => n.body)).toEqual(["aangepast"]);
+  });
+
+  it("geeft null voor een onbekend id bij updaten", async () => {
+    expect(await updateNote(12345, "wat dan ook")).toBeNull();
   });
 });

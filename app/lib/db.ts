@@ -45,3 +45,14 @@ export async function deleteNote(id: number): Promise<boolean> {
   ]);
   return rowCount !== null && rowCount > 0;
 }
+
+export async function updateNote(
+  id: number,
+  body: string,
+): Promise<Note | null> {
+  const { rows } = await db().query<Note>(
+    "UPDATE notes SET body = $2 WHERE id = $1 RETURNING id, body",
+    [id, body],
+  );
+  return rows[0] ?? null;
+}
